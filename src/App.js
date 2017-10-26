@@ -147,16 +147,14 @@ class App extends Component {
                   {this.state.adds.map((add) => {
                     return (
                       <li key={add.id}>
-                        <h3>{add.title}</h3>
+                        <h3>{add.title} {add.name === this.state.user.displayName || add.user === this.state.user.email ?
+                        <button className="removeAdd" onClick={() => this.removeAdd(add.id)}>Ta bort annons!</button> : null}</h3>
+                        <p>Namn: {add.name}</p>
                         <p>Vart: {add.where}</p>
                         <p>När: {add.date} - {add.time}</p>
-                        <p>Vad? {add.what}</p>
+                        <p>{add.what}</p>
                         <p><button onClick={this.props.increment} > Intresserad? </button>  { this.props.counter } kommer. </p>
-                        <p>Namn: {add.name}
-                            {add.name === this.state.user.displayName || add.user === this.state.user.email ?
-                              <button onClick={() => this.removeAdd(add.id)}>Ta bort annons!</button> : null}
-                        </p>
-                      </li>
+                        </li>
                     )
                   })}
                 </ul>

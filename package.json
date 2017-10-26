@@ -2,6 +2,7 @@
   "name": "blogg",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://rdny.se/whatsupumea",
   "dependencies": {
     "firebase": "^4.5.0",
     "react": "^16.0.0",
