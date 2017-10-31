@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Provider } from 'react-redux';
 import firebase, { auth, provider } from './firebase';
 import Header from './components/Header';
 import './style/App.css';
-import { incrementCounter } from './actions';
+import { updateLikes } from './actions';
 
 class App extends Component {
 
-  state = {
-    counter: 0
-  }
+  // state = {
+  //   likes: ''
+  //   }
 
   constructor() {
     super();
@@ -21,6 +19,7 @@ class App extends Component {
       time: '',
       where: '',
       what: '',
+      likes: '',
       adds: [],
       user: null
     }
@@ -29,13 +28,7 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-  }
-
-  handleChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
+    }
 
   logout() {
     auth.signOut()
@@ -65,6 +58,7 @@ class App extends Component {
       title: this.state.title,
       date: this.state.date,
       time: this.state.time,
+      likes: this.state.likes,
       where: this.state.where,
       what: this.state.what
     }
@@ -72,6 +66,12 @@ class App extends Component {
     this.setState({
       currentItem: '',
       username: ''
+    });
+  }
+
+  handleChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value
     });
   }
 
@@ -91,6 +91,7 @@ class App extends Component {
           id: add,
           name: adds[add].name,
           title: adds[add].title,
+          likes: adds[add].likes,
           date: adds[add].date,
           time: adds[add].time,
           where: adds[add].where,
@@ -110,10 +111,8 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-       
        <Header />
         <div className="wrapper">
-         
         <div className="login">
             {this.state.user ?
               <button onClick={this.logout}>Logga ut</button>                
@@ -121,14 +120,9 @@ class App extends Component {
               <button onClick={this.login}>Logga in</button>              
             }
           </div>
-          
         </div>
-  
         {this.state.user ?
           <div>
-            <div className="user-profile">
-              <img src={this.state.user.photoURL} alt="Profilbild" />
-            </div>
             <div className="container">
               <section className="add-item">
               <form onSubmit={this.handleSubmit}>
@@ -153,8 +147,9 @@ class App extends Component {
                         <p>Vart: {add.where}</p>
                         <p>När: {add.date} - {add.time}</p>
                         <p>{add.what}</p>
-                        <p><button onClick={this.props.increment} > Intresserad? </button>  { this.props.counter } kommer. </p>
-                        </li>
+                        <p>{add.likes} gillar detta event.</p>
+                        <button className="likeAdd" onClick={updateLikes.bind(this)} data-id={add.id}>Gilla Eventet!</button>
+                      </li>
                     )
                   })}
                 </ul>
@@ -168,27 +163,11 @@ class App extends Component {
             <h2>Välkommen!</h2>
             <h3>För att kunna se vad som händer i Umeå, för att lägga till ett event eller för att visa ditt intresse för ett, måste du vara inloggad.</h3>
             </div>
-            
           </div>
-          
         }
       </div>
-      
     );
   }
 }
 
-function mapStateToProps(state){
-  return{
-    counter: state
-  }
-}
-
-function mapDispatchToProps(dispatch){
-  return{
-    increment: () => dispatch(incrementCounter()),
-        
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default (App);
