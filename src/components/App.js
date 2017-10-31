@@ -6,6 +6,10 @@ import { updateLikes } from './actions';
 
 class App extends Component {
 
+  // state = {
+  //   likes: ''
+  //   }
+
   constructor() {
     super();
     this.state = {
