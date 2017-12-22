@@ -1,32 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import firebase, { auth, provider } from './firebase';
+import { auth, provider } from './firebase';
 import Header from './components/Header';
 import './style/App.css';
-import { decrementCounter, incrementCounter, updateLikes, handleSubmit, handleChange } from './actions';
+import { updateLikes, handleSubmit, handleChange, posts, removePost } from './actions';
+import { bindActionCreators } from 'redux';
+
 
 class App extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      name: '',
-      title: '',
-      date: '',
-      time: '',
-      where: '',
-      what: '',
-      likes: '',
-      adds: [],
       user: null
-      
     }
-
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    }
-    
-//Login & Logout via Google
+  }
+
+  //Login & Logout via Google
   login() {
     auth.signInWithPopup(provider)
       .then((result) => {
@@ -47,42 +39,14 @@ class App extends Component {
   }
 
   componentDidMount(){
-
     auth.onAuthStateChanged((user) => {
-      if (user) {
+      if(user){
         this.setState({ user });
+        // request all posts from action
+        this.props.actions.posts();
       }
-
-     }); 
-
-
-    const addsRef = firebase.database().ref('adds');
-    addsRef.on('value', (snapshot) => {
-      let adds = snapshot.val();
-      let newState = [];
-      for (let add in adds) {
-        newState.push({
-          id: add,
-          name: adds[add].name,
-          title: adds[add].title,
-          likes: adds[add].likes,
-          date: adds[add].date,
-          time: adds[add].time,
-          where: adds[add].where,
-          what: adds[add].what
-        });
-      }
-      this.setState({
-        adds: newState
-      });
     });
   }
-  removeAdd(addId) {
-    const addRef = firebase.database().ref(`/adds/${addId}`);
-    addRef.remove();
-  }
-
-
 
   render() {
     return (
@@ -91,9 +55,9 @@ class App extends Component {
         <div className="wrapper">
          <div className="login">
             {this.state.user ?
-              <button onClick={this.logout}>Logga ut</button>                
+              <button onClick={this.logout}>Logga ut</button>
               :
-              <button onClick={this.login}>Logga in</button>              
+              <button onClick={this.login}>Logga in</button>
             }
           </div>
         </div>
@@ -114,11 +78,12 @@ class App extends Component {
           <section className='display-item'>
               <div className="wrapper">
                 <ul>
-                  {this.state.adds.map((add) => {
+                  {Object.keys(this.props.state.posts.posts).map((key, index) => {
+                    let add = this.props.state.posts.posts[key];
                     return (
-                      <li key={add.id}>
+                      <li key={index}>
                         <h3>{add.title} {add.name === this.state.user.displayName || add.user === this.state.user.email ?
-                        <button className="removeAdd" onClick={() => this.removeAdd(add.id)}>Ta bort annons!</button> : null}</h3>
+                        <button className="removeAdd" onClick={() => this.removePost(add.id)}>Ta bort annons!</button> : null}</h3>
                         <p>Namn: {add.name}</p>
                         <p>Vart: {add.where}</p>
                         <p>När: {add.date} - {add.time}</p>
@@ -138,13 +103,6 @@ class App extends Component {
             <div className="login-alert">
             <h2>Välkommen!</h2>
             <h3>För att kunna se vad som händer i Umeå, för att lägga till ett event eller för att visa ditt intresse för ett, måste du vara inloggad.</h3>
-            <button onClick={this.props.increment} >
-                  Increment
-            </button>
-            <button onClick={this.props.decrement} >
-                  Decrement
-            </button>
-            <h2> {this.props.counter} </h2>
             </div>
           </div>
         }
@@ -155,15 +113,17 @@ class App extends Component {
 
 function mapStateToProps(state){
   return{
-    counter: state
+    state: state
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
-    increment: () => dispatch(incrementCounter()),
-    decrement: () => dispatch(decrementCounter())
-  }
+    actions: {
+      posts: bindActionCreators(posts, dispatch)
+    }
+
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

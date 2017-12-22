@@ -1,5 +1,26 @@
 import firebase from './firebase';
 
+//Read the events
+export function posts(){
+  return (dispatch, state) => {
+    firebase.database().ref('adds').on('value', (snapshot) => {
+      dispatch({
+        type: 'all_events',
+        payload: snapshot.val()
+      });
+    })
+}
+}
+
+//Remove add
+
+export function removePost() {
+  firebase.database().ref(`/adds/${addId}`)
+      removePost.remove()
+}
+
+ 
+
 //So we can like an event
 export function updateLikes(e) {
   let addId = e.target.attributes['data-id'].value;
@@ -49,16 +70,4 @@ export function handleChange(e) {
   this.setState({
     [e.target.name]: e.target.value
   });
-}
-
-export function incrementCounter() {
-  return {
-    type: "INCREMENT"
-  }
-}
-
-export function decrementCounter() {
-  return {
-    type: "DECREMENT"
-  }
 }
