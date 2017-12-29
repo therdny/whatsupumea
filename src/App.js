@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { auth, provider } from './firebase';
 import Header from './components/Header';
 import './style/App.css';
-import { updateLikes, handleSubmit, handleChange, posts, removePost } from './actions';
+import * as postActions from './actions';
 import { bindActionCreators } from 'redux';
 
 
@@ -16,6 +16,7 @@ class App extends Component {
     }
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
+    console.log(this.props.state.posts.posts);
   }
 
   //Login & Logout via Google
@@ -43,9 +44,38 @@ class App extends Component {
       if(user){
         this.setState({ user });
         // request all posts from action
-        this.props.actions.posts();
+        this.props.actions.posts.posts();
       }
     });
+  }
+
+/*   updateLikes(e){
+    e.preventDefault();
+    let ref = this.refs
+    let data = {
+      likes: ref.likes.value
+    }
+    if (data) {
+      data.likes++;
+    }
+    return data;
+  }; */
+
+
+
+   handleSubmit(e){
+    e.preventDefault();
+    let ref = this.refs;
+    let data = {
+      name: ref.username.value,
+      title: ref.title.value,
+      date: ref.date.value,
+      time: ref.time.value,
+      where: ref.where.value,
+      what: ref.what.value
+    }
+    this.props.actions.posts.addNewEvent(data);
+    e.currentTarget.reset();
   }
 
   render() {
@@ -65,13 +95,13 @@ class App extends Component {
           <div>
             <div className="container">
               <section className="add-item">
-              <form onSubmit={handleSubmit.bind(this)}>
-                <input type="text" name="username" defaultValue={this.state.user.displayName}/>
-                <input type="text" name="title" placeholder="Rubrik" onChange={handleChange.bind(this)} value={this.state.title}/>
-                <input type="date" name="date" placeholder="Vilket datum?" onChange={handleChange.bind(this)} value={this.state.date}/>
-                <input type="time" name="time" placeholder="Vilken tid?" onChange={handleChange.bind(this)} value={this.state.time}/>
-                <input type="text" name="where" placeholder="Vart?" onChange={handleChange.bind(this)} value={this.state.where}/>
-                <textarea name="what" height="40" placeholder="Vad?" onChange={handleChange.bind(this)} value={this.state.what}/>
+              <form onSubmit={this.handleSubmit.bind(this)}>
+                <input type="text" name="username" defaultValue={this.state.user.displayName} ref="username"/>
+                <input type="text" name="title" placeholder="Rubrik" ref="title"/>
+                <input type="date" name="date" placeholder="Vilket datum?" ref="date"/>
+                <input type="time" name="time" placeholder="Vilken tid?" ref="time"/>
+                <input type="text" name="where" placeholder="Vart?" ref="where"/>
+                <textarea name="what" height="40" placeholder="Vad?" ref="what"/>
                 <button>Lägg till event!</button>
               </form>
           </section>
@@ -80,18 +110,21 @@ class App extends Component {
                 <ul>
                   {Object.keys(this.props.state.posts.posts).map((key, index) => {
                     let add = this.props.state.posts.posts[key];
-                    return (
-                      <li key={index}>
-                        <h3>{add.title} {add.name === this.state.user.displayName || add.user === this.state.user.email ?
-                        <button className="removeAdd" onClick={() => this.removePost(add.id)}>Ta bort annons!</button> : null}</h3>
-                        <p>Namn: {add.name}</p>
-                        <p>Vart: {add.where}</p>
-                        <p>När: {add.date} - {add.time}</p>
-                        <p>{add.what}</p>
-                        <p>{add.likes} gillar detta event.</p>
-                        <button className="likeAdd" onClick={updateLikes.bind(this)} data-id={add.id}>Gilla Eventet!</button>
-                      </li>
-                    )
+                    if(add){
+                      return (
+                        <li key={index}>
+                          <h3>{add.title} {add.name === this.state.user.displayName || add.user === this.state.user.email ?
+                          <button className="removeAdd" onClick={() => this.props.actions.posts.removeAdd(key)}>Ta bort annons!</button> : null}</h3>
+                          <p>Namn: {add.name}</p>
+                          <p>Vart: {add.where}</p>
+                          <p>När: {add.date} - {add.time}</p>
+                          <p>{add.what}</p>
+                          <p>{add.likes} gillar detta event.</p>
+                          <button className="likeAdd" onClick={() => this.props.actions.posts.updateLikes(this.refs.likes.attributes['data-id'].value)}>Gilla Eventet!</button>
+                        </li>
+                      )
+                    }
+                    return null;
                   })}
                 </ul>
               </div>
@@ -120,7 +153,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return {
     actions: {
-      posts: bindActionCreators(posts, dispatch)
+      posts: bindActionCreators(postActions, dispatch)
     }
 
   };

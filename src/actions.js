@@ -1,5 +1,21 @@
 import firebase from './firebase';
 
+//Post an add
+export function addNewEvent(data){
+  return (dispatch) => {
+    const addsRef = firebase.database().ref('adds');
+    addsRef.push(data);
+  }
+}
+
+//Remove an add
+export function removeAdd(addId) {
+  return (dispatch) => {
+    const removePost = firebase.database().ref(`/adds/${addId}`);
+     removePost.remove();
+  }
+}
+
 //Read the events
 export function posts(){
   return (dispatch, state) => {
@@ -12,62 +28,16 @@ export function posts(){
 }
 }
 
-//Remove add
+ //Like an add
+ export function updateLikes(e){
+    e.preventDefault();
+    let ref = this.refs
+    let data = {
+      likes: ref.likes.value
+    }
+    if (data) {
+      data.likes++;
+    }
+    return data;
+  };
 
-export function removePost() {
-  firebase.database().ref(`/adds/${addId}`)
-      removePost.remove()
-}
-
- 
-
-//So we can like an event
-export function updateLikes(e) {
-  let addId = e.target.attributes['data-id'].value;
-  let ref = firebase.database().ref(`adds/${addId}`);
-  function toggleLikes(addRef, uid) {
-    addRef.transaction(function(add) {
-      if (add) {
-        add.likes++;
-      }
-      return add;
-    });
-  }
-  toggleLikes(ref, addId);
-}
-
-//Our handleSubmit
-export function handleSubmit(e) {
-  e.preventDefault();
-  const addsRef = firebase.database().ref('adds');
-  const add = {
-    name: this.state.user.displayName || this.state.user.email,
-    title: this.state.title,
-    date: this.state.date,
-    time: this.state.time,
-    likes: this.state.likes,
-    where: this.state.where,
-    what: this.state.what
-  }
-//Resets the form after submit
-  this.setState({
-    time: '',
-    title: '',
-    date: '',
-    where: '',
-    what: '',
-  })
-
-  addsRef.push(add);
-  this.setState({
-    username: '',
-    });
-    
-}
-
-//handleChange
-export function handleChange(e) {
-  this.setState({
-    [e.target.name]: e.target.value
-  });
-}
