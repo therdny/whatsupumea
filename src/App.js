@@ -6,8 +6,6 @@ import './style/App.css';
 import * as postActions from './actions';
 import { bindActionCreators } from 'redux';
 
-
-
 class App extends Component {
 
   constructor(props) {
@@ -17,7 +15,6 @@ class App extends Component {
     }
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    console.log(this.props.state.posts.posts);
   }
 
   //Login & Logout via Google
@@ -49,21 +46,6 @@ class App extends Component {
       }
     });
   }
-/* 
-  //Like an add
-  updateLikes(e){
-    e.preventDefault();
-    let ref = this.refs
-    let data = {
-      likes: ref.likes.value
-    }
-    if (data) {
-      data.likes++;
-    }
-    return data;
-  }; */
-
-  
 
    handleSubmit(e){
     e.preventDefault();
