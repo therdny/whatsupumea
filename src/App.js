@@ -7,6 +7,7 @@ import * as postActions from './actions';
 import { bindActionCreators } from 'redux';
 
 
+
 class App extends Component {
 
   constructor(props) {
@@ -48,8 +49,9 @@ class App extends Component {
       }
     });
   }
-
-/*   updateLikes(e){
+/* 
+  //Like an add
+  updateLikes(e){
     e.preventDefault();
     let ref = this.refs
     let data = {
@@ -61,7 +63,7 @@ class App extends Component {
     return data;
   }; */
 
-
+  
 
    handleSubmit(e){
     e.preventDefault();
@@ -120,7 +122,7 @@ class App extends Component {
                           <p>När: {add.date} - {add.time}</p>
                           <p>{add.what}</p>
                           <p>{add.likes} gillar detta event.</p>
-                          <button className="likeAdd" onClick={() => this.props.actions.posts.updateLikes(this.refs.likes.attributes['data-id'].value)}>Gilla Eventet!</button>
+                          <button className="likeAdd" onClick={() => this.props.actions.posts.updateLikes(key)}>Gilla Eventet!</button>
                         </li>
                       )
                     }

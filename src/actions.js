@@ -16,6 +16,39 @@ export function removeAdd(addId) {
   }
 }
 
+
+
+//Like an event
+
+export function updateLikes(addId) {
+  return (dispatch) => {
+    let ref = firebase.database().ref(`/adds/${addId}`);
+    ref.transaction(function(add) {
+   		if (add) {
+			add.likes++;
+      }
+      return add;
+	})
+  }
+}
+  
+  
+  
+/*   let addId = e.target.attributes['data-id'].value;
+  let ref = firebase.database().ref(`adds/${addId}`);
+  function toggleLikes(addRef, uid) {
+    addRef.transaction(function(add) {
+      if (add) {
+        console.log(add)
+          add.likes++;
+       add.likes++;
+      }
+      return add;
+    });
+  }
+  toggleLikes(ref, addId);
+}
+ */
 //Read the events
 export function posts(){
   return (dispatch, state) => {
@@ -27,17 +60,3 @@ export function posts(){
     })
 }
 }
-
- //Like an add
- export function updateLikes(e){
-    e.preventDefault();
-    let ref = this.refs
-    let data = {
-      likes: ref.likes.value
-    }
-    if (data) {
-      data.likes++;
-    }
-    return data;
-  };
-
